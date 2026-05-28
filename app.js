@@ -146,13 +146,38 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 7. Contact Form Handling & Toast Feedback ---
+    // --- 7. Contact Form Handling & Formspree Submission ---
     const contactForm = document.getElementById('contact-form');
     const toast = document.getElementById('toast');
     const submitBtn = document.querySelector('.btn-submit');
 
+    // Add spinner keyframes once
+    if (!document.getElementById('spin-style')) {
+        const style = document.createElement('style');
+        style.id = 'spin-style';
+        style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
+        document.head.appendChild(style);
+    }
+
+    const spinnerSVG = `
+        <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" style="animation: spin 1s linear infinite; margin-left: 8px;">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" style="opacity: 0.25;"></circle>
+            <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" style="opacity: 0.75;"></path>
+        </svg>
+    `;
+
+    function showToast(message, isError = false) {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.style.background = isError
+            ? 'linear-gradient(135deg, #c0392b, #922b21)'
+            : '';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 5000);
+    }
+
     if (contactForm && toast) {
-        contactForm.addEventListener('submit', (e) => {
+        contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const nameInput = document.getElementById('name').value.trim();
@@ -161,45 +186,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const messageInput = document.getElementById('message').value.trim();
 
             if (!nameInput || !emailInput || !subjectInput || !messageInput) {
-                return; // Standard validation
+                return;
             }
 
-            // Simulate form submission
             if (submitBtn) {
                 submitBtn.disabled = true;
                 const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = `
-                    Sending...
-                    <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" style="animation: spin 1s linear infinite; margin-left: 8px;">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" style="opacity: 0.25;"></circle>
-                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" style="opacity: 0.75;"></path>
-                    </svg>
-                `;
+                submitBtn.innerHTML = `Sending...${spinnerSVG}`;
 
-                // Add spinner animation style dynamically if it doesn't exist
-                if (!document.getElementById('spin-style')) {
-                    const style = document.createElement('style');
-                    style.id = 'spin-style';
-                    style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
-                    document.head.appendChild(style);
-                }
+                try {
+                    const response = await fetch('https://formspree.io/f/meedvyyw', {
+                        method: 'POST',
+                        headers: { 'Accept': 'application/json' },
+                        body: new FormData(contactForm)
+                    });
 
-                // Simulate network latency (1.2 seconds)
-                setTimeout(() => {
-                    // Show custom toast notification
-                    toast.classList.add('show');
-                    
-                    // Reset form and buttons
-                    contactForm.reset();
+                    if (response.ok) {
+                        contactForm.reset();
+                        showToast('Message sent. I will get back to you shortly.');
+                    } else {
+                        const data = await response.json();
+                        const errMsg = data?.errors?.map(err => err.message).join(', ') || 'Submission failed. Please try again.';
+                        showToast(errMsg, true);
+                    }
+                } catch (_) {
+                    showToast('Network error. Please check your connection and try again.', true);
+                } finally {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalText;
-
-                    // Fade out toast after 4 seconds
-                    setTimeout(() => {
-                        toast.classList.remove('show');
-                    }, 4000);
-
-                }, 1200);
+                }
             }
         });
     }
