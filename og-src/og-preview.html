@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OG Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;width:1200px;height:630px;overflow:hidden;background:#0a0f1e}
+  *{box-sizing:border-box}
+  #og{position:relative;width:1200px;height:630px;overflow:hidden;
+    background:linear-gradient(135deg,#0a0f1e 0%,#0d1b33 100%);
+    font-family:'Inter',-apple-system,Helvetica,Arial,sans-serif;color:#fff}
+  .deco{position:absolute;right:0;top:0;width:520px;height:630px}
+  .content{position:absolute;left:80px;top:0;bottom:0;width:760px;padding:84px 0 64px;display:flex;flex-direction:column}
+  h1{margin:0;font-size:84px;line-height:1.05;font-weight:800;letter-spacing:-2px;color:#fff}
+  .title{margin-top:22px;font-size:34px;line-height:1.3;font-weight:500;color:#e6edf7}
+  .title .acc{color:#1a9bf0;font-weight:600}
+  .stats{margin-top:52px;display:flex;align-items:stretch}
+  .stat{padding:0 44px}
+  .stat:first-child{padding-left:0}
+  .stat+.stat{border-left:1px solid rgba(26,155,240,.35)}
+  .num{font-size:58px;font-weight:800;line-height:1;color:#fff;letter-spacing:-1px}
+  .lbl{margin-top:10px;font-size:19px;font-weight:500;color:#8b9bb4}
+  .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:baseline;width:1040px;font-size:20px;color:#8b9bb4}
+  .foot .url{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:20px}
+</style>
+</head>
+<body>
+<!-- Update yearly: years IT = 18+ / years Salesforce = 12+ (see .num elements below) -->
+<div id="og">
+  <svg class="deco" viewBox="0 0 520 630" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="g" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#1a9bf0" stop-opacity=".9"/><stop offset="1" stop-color="#1a9bf0" stop-opacity="0"/></radialGradient>
+      <linearGradient id="fade" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".4" stop-color="#fff" stop-opacity="1"/></linearGradient>
+      <mask id="m"><rect width="520" height="630" fill="url(#fade)"/></mask>
+      <polygon id="hx" points="40,0 80,23 80,69 40,92 0,69 0,23" fill="none" stroke="#1a9bf0" stroke-width="1.2"/>
+    </defs>
+    <g mask="url(#m)" opacity=".38">
+      <g id="grid"></g>
+    </g>
+    <g id="nodes"></g>
+    <!-- Salesforce-style cloud outline -->
+    <path d="M430 88c-9 0-16-7-16-16 0-8 6-15 14-16 2-10 11-18 22-18 8 0 15 4 19 10 3-2 7-3 11-3 11 0 20 9 20 20 0 1 0 2-.1 3 7 2 11 8 11 15 0 9-7 15-16 15z" transform="translate(-20 10)" fill="none" stroke="#00A1E0" stroke-width="2" opacity=".8"/>
+  </svg>
+  <div class="content">
+    <h1>Bishwambhar Sen</h1>
+    <div class="title">Principal Software Engineer<br><span class="acc">&amp; Senior Salesforce Developer</span></div>
+    <div class="stats">
+      <div class="stat"><div class="num">18+</div><div class="lbl">Years IT</div></div>
+      <div class="stat"><div class="num">8x</div><div class="lbl">Salesforce Certified</div></div>
+      <div class="stat"><div class="num">12+</div><div class="lbl">Years Salesforce</div></div>
+    </div>
+    <div class="foot"><span>Cyberjaya, Malaysia</span><span class="url">bishwambharsen.github.io/portfolio</span></div>
+  </div>
+</div>
+<script>
+// build hex grid + glowing nodes in the decorative SVG
+(function(){
+  var NS='http://www.w3.org/2000/svg',g=document.getElementById('grid'),n=document.getElementById('nodes');
+  var w=80,h=92,pts=[];
+  for(var r=-1;r<9;r++)for(var c=-1;c<8;c++){
+    var x=c*w+(r%2?w/2:0)+20,y=r*h*0.75+10;
+    var u=document.createElementNS(NS,'use');u.setAttribute('href','#hx');u.setAttribute('transform','translate('+x+' '+y+')');g.appendChild(u);
+    pts.push([x+40,y+46]);
+  }
+  [[6,4],[19,12],[30,22],[41,9],[52,30],[14,40],[60,18]].forEach(function(i){
+    var p=pts[i[0]*1+ (i[1]%pts.length)]||pts[i[0]];if(!p)return;
+    if(p[0]<200)return;
+    var a=document.createElementNS(NS,'circle');a.setAttribute('cx',p[0]);a.setAttribute('cy',p[1]);a.setAttribute('r',22);a.setAttribute('fill','url(#g)');a.setAttribute('opacity','.5');n.appendChild(a);
+    var b=document.createElementNS(NS,'circle');b.setAttribute('cx',p[0]);b.setAttribute('cy',p[1]);b.setAttribute('r',3.5);b.setAttribute('fill','#4cc3ff');n.appendChild(b);
+  });
+})();
+</script>
+</body>
+</html>
